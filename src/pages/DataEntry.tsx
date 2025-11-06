@@ -30,6 +30,23 @@ const candidatesData = [
   { slNo: 15, name: "Abhishek Joshi", rollNo: "110378000000024", gender: "Male", bibNo: "1257" },
 ];
 
+// Format running time as HH:MM:SS (6 digits total)
+const formatRunningTime = (value: string): string => {
+  const digits = value.replace(/\D/g, ''); // Remove all non-digits
+  
+  if (digits.length === 0) return '';
+  if (digits.length <= 2) return digits;
+  if (digits.length <= 4) return `${digits.slice(0, 2)}:${digits.slice(2)}`;
+  return `${digits.slice(0, 2)}:${digits.slice(2, 4)}:${digits.slice(4, 6)}`; // HH:MM:SS
+};
+
+// Format total lapse as 2 digits only
+const formatTotalLapse = (value: string): string => {
+  const digits = value.replace(/\D/g, ''); // Remove all non-digits
+  return digits.slice(0, 2); // Maximum 2 digits
+};
+
+
 type BatchType = "1600m" | "100m" | "shotput" | "";
 
 const DataEntry = () => {
@@ -171,32 +188,38 @@ const DataEntry = () => {
                         <td className="py-3 px-4 text-sm">{candidate.gender}</td>
                         <td className="py-3 px-4 text-sm font-semibold">{candidate.bibNo}</td>
                         <td className="py-3 px-4">
-                          <Input
-                            type="text"
-                            placeholder="00:00:00"
-                            value={runningTimes[candidate.slNo] || ""}
-                            onChange={(e) =>
-                              setRunningTimes({ ...runningTimes, [candidate.slNo]: e.target.value })
-                            }
-                            disabled={isSubmitted}
-                            className={`glass-input w-28 ${
-                              isSubmitted ? "bg-gray-100 cursor-not-allowed" : ""
-                            }`}
-                          />
+                        {/* Running Time */}
+                         <Input
+  type="text"
+  placeholder="00:00:00"
+  value={runningTimes[candidate.slNo] || ""}
+  onChange={(e) => {
+    const formatted = formatRunningTime(e.target.value);
+    setRunningTimes({ ...runningTimes, [candidate.slNo]: formatted });
+  }}
+  disabled={isSubmitted}
+  maxLength={8} // HH:MM:SS = 8 characters
+  className={`glass-input w-28 text-center font-mono ${
+    isSubmitted ? "bg-gray-100 cursor-not-allowed" : ""
+  }`}
+/>
                         </td>
                         <td className="py-3 px-4">
+                        {/* Total Lapse */}
                           <Input
-                            type="text"
-                            placeholder="00:00:00"
-                            value={totalLapses[candidate.slNo] || ""}
-                            onChange={(e) =>
-                              setTotalLapses({ ...totalLapses, [candidate.slNo]: e.target.value })
-                            }
-                            disabled={isSubmitted}
-                            className={`glass-input w-28 ${
-                              isSubmitted ? "bg-gray-100 cursor-not-allowed" : ""
-                            }`}
-                          />
+  type="text"
+  placeholder="00"
+  value={totalLapses[candidate.slNo] || ""}
+  onChange={(e) => {
+    const formatted = formatTotalLapse(e.target.value);
+    setTotalLapses({ ...totalLapses, [candidate.slNo]: formatted });
+  }}
+  disabled={isSubmitted}
+  maxLength={2} // Maximum 2 digits
+  className={`glass-input w-16 text-center font-mono ${
+    isSubmitted ? "bg-gray-100 cursor-not-allowed" : ""
+  }`}
+/>
                         </td>
                       </>
                     )}
