@@ -19,17 +19,11 @@ const Landing = () => {
         
         <div className="space-y-4">
           <h1 className="text-4xl font-bold text-foreground tracking-tight">
-            OFFICE OF THE COMMISSIONER OF POLICE
+           PST PET WORKFLOW
           </h1>
           <h2 className="text-2xl font-semibold text-primary">
-            PUNE CITY
+            Ground Level PST PET Software Workflow
           </h2>
-          <h3 className="text-xl font-medium text-muted-foreground px-8">
-            PRISON CONSTABLE(WEST REGION) RECRUITMENT 22-23
-          </h3>
-          <p className="text-base text-muted-foreground">
-            Physical Endurance & Measurement Test (PE&MT) Dashboard
-          </p>
         </div>
 
         <Button

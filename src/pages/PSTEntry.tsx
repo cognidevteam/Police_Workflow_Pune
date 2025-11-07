@@ -177,24 +177,24 @@ const PSTEntry = () => {
               <tr className="border-b border-white/30">
                 <th className="text-left py-3 px-4 text-sm font-semibold text-foreground">TYPE</th>
                 <th className="text-left py-3 px-4 text-sm font-semibold text-foreground">VALUE</th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-foreground">CAPTURE</th>
+                
               </tr>
             </thead>
             <tbody>
               <tr className="border-b border-white/20 hover:bg-white/30 transition-colors">
                 <td className="py-4 px-4 text-sm">Height in Centimeters (cm)</td>
                 <td className="py-4 px-4 text-sm font-semibold">{pstData.height}</td>
-                <td className="py-4 px-4 text-sm">--</td>
+                
               </tr>
               <tr className="border-b border-white/20 hover:bg-white/30 transition-colors">
                 <td className="py-4 px-4 text-sm">Chest (Normal) in Centimeters (cm)</td>
                 <td className="py-4 px-4 text-sm font-semibold">{pstData.chestNormal}</td>
-                <td className="py-4 px-4 text-sm">--</td>
+                
               </tr>
               <tr className="hover:bg-white/30 transition-colors">
                 <td className="py-4 px-4 text-sm">Chest (Expand) in Centimeters (cm)</td>
                 <td className="py-4 px-4 text-sm font-semibold">{pstData.chestExpanded}</td>
-                <td className="py-4 px-4 text-sm">--</td>
+                
               </tr>
             </tbody>
           </table>
