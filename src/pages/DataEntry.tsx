@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Check, X } from "lucide-react";
+import { Search, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -11,7 +11,7 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 
-const candidatesData = [
+const baseCandidatesData = [
   { slNo: 1, name: "Suresh Patil", rollNo: "110378000000011", gender: "Male", chestNo: "40072", bibNo: "1244" },
   { slNo: 2, name: "Meera Kulkarni", rollNo: "110378000000012", gender: "Female", chestNo: "40073", bibNo: "1245" },
   { slNo: 3, name: "Deepak Joshi", rollNo: "110378000000013", gender: "Male", chestNo: "40074", bibNo: "1246" },
@@ -56,6 +56,12 @@ const formatAttempt = (value: string): string => {
 };
 
 const DataEntry = () => {
+  // Current candidates list (shuffled on search)
+  const [candidatesData, setCandidatesData] = useState(baseCandidatesData);
+  
+  // Loading state for skeleton
+  const [isLoading, setIsLoading] = useState(false);
+  
   // States for 1600m Running
   const [runningTimes1600, setRunningTimes1600] = useState<Record<number, string>>({});
   const [totalLapses1600, setTotalLapses1600] = useState<Record<number, string>>({});
@@ -73,9 +79,39 @@ const DataEntry = () => {
   const [marksShotPut, setMarksShotPut] = useState<Record<number, number>>({});
   const [marks100m, setMarks100m] = useState<Record<number, number>>({});
   
+  // Search state
+  const [batchNumber, setBatchNumber] = useState("");
+  
   // Control states
   const [showViewPreview, setShowViewPreview] = useState(false);
   const [showModal, setShowModal] = useState(false);
+
+  // Shuffle function for batch regeneration
+  const shuffleList = (list: typeof baseCandidatesData) => {
+    const shuffled = [...list].sort(() => Math.random() - 0.5); // Full random shuffle
+    return shuffled.map((candidate, index) => ({
+      ...candidate,
+      slNo: index + 1, // Renumber slNo from 1 to 15
+    }));
+  };
+
+  const handleSearchBatch = () => {
+    if (!batchNumber.trim()) {
+      toast.error("Please enter a Batch Number");
+      return;
+    }
+    
+    setIsLoading(true); // Start skeleton loader
+    
+    // Simulate loading delay for animation
+    setTimeout(() => {
+      const newList = shuffleList(baseCandidatesData);
+      setCandidatesData(newList);
+      setBatchNumber(""); // Clear input
+      setIsLoading(false); // Stop loader
+      toast.success(`Batch ${batchNumber} loaded with regenerated list!`);
+    }, 500); // 1.5s delay for visible animation
+  };
 
   const handleSubmit = () => {
     // Simple validation: check if any data entered
@@ -181,11 +217,63 @@ const DataEntry = () => {
     });
   };
 
+  // Skeleton Row Component
+  const SkeletonRow = ({ index }: { index: number }) => (
+    <tr className={`border-b border-gray-200 ${index % 2 === 0 ? "bg-slate-50/50" : "bg-gray-50/50"}`}>
+      <td className="py-3 px-4">
+        <div className="h-4 bg-gray-200 rounded animate-pulse w-4"></div>
+      </td>
+      <td className="py-3 px-4">
+        <div className="h-4 bg-gray-200 rounded animate-pulse w-32"></div>
+      </td>
+      <td className="py-3 px-4">
+        <div className="h-4 bg-gray-200 rounded animate-pulse w-20"></div>
+      </td>
+      <td className="py-3 px-4">
+        <div className="h-10 bg-gray-200 rounded animate-pulse w-28 mx-auto"></div>
+      </td>
+      <td className="py-3 px-4">
+        <div className="h-10 bg-gray-200 rounded animate-pulse w-16 mx-auto"></div>
+      </td>
+      <td className="py-3 px-4">
+        <div className="h-10 bg-gray-200 rounded animate-pulse w-16 mx-auto"></div>
+      </td>
+      <td className="py-3 px-4">
+        <div className="h-10 bg-gray-200 rounded animate-pulse w-16 mx-auto"></div>
+      </td>
+      <td className="py-3 px-4">
+        <div className="h-10 bg-gray-200 rounded animate-pulse w-16 mx-auto"></div>
+      </td>
+      <td className="py-3 px-4">
+        <div className="h-10 bg-gray-200 rounded animate-pulse w-28 mx-auto"></div>
+      </td>
+    </tr>
+  );
+
   return (
     <div className="space-y-6">
       <div className="glass-card p-6">
-        <div className="bg-gradient-to-r from-primary to-secondary text-white px-6 py-3 rounded-xl mb-6">
-          <h3 className="text-lg font-semibold">Comprehensive Data Entry</h3>
+        {/* Search Bar replacing Header */}
+        <div className="flex gap-2 mb-6">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+            <Input
+              placeholder="Enter Batch Number"
+              value={batchNumber}
+              onChange={(e) => setBatchNumber(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSearchBatch()}
+              className="glass-input pl-10"
+              disabled={isLoading}
+            />
+          </div>
+          <Button
+            onClick={handleSearchBatch}
+            className="bg-gradient-to-r from-primary to-secondary text-white"
+            disabled={isLoading}
+          >
+            <Search className="w-4 h-4 mr-2" />
+            {isLoading ? "Searching..." : "Search"}
+          </Button>
         </div>
 
         <div className="overflow-x-auto rounded-lg">
@@ -214,104 +302,116 @@ const DataEntry = () => {
               </tr>
             </thead>
             <tbody>
-              {candidatesData.map((candidate, index) => (
-                <tr
-                  key={candidate.slNo}
-                  className={`border-b border-gray-200 ${
-                    index % 2 === 0 ? "bg-slate-50/50" : "bg-gray-50/50"
-                  } hover:bg-slate-100/50 transition-colors`}
-                >
-                  <td className="py-3 px-4 text-sm">{candidate.slNo}</td>
-                  <td className="py-3 px-4 text-sm font-medium" style={{ textAlign: "left", paddingLeft: "8px" }}>
-                    {candidate.name}
-                  </td>
-                  <td className="py-3 px-4 text-sm font-semibold">{candidate.chestNo}</td>
-                  
-                  {/* 1600m Running */}
-                  <td className="py-3 px-4">
-                    <Input
-                      type="text"
-                      placeholder="00:00:00"
-                      value={runningTimes1600[candidate.slNo] || ""}
-                      onChange={(e) => {
-                        const formatted = formatRunningTime(e.target.value);
-                        setRunningTimes1600({ ...runningTimes1600, [candidate.slNo]: formatted });
-                      }}
-                      maxLength={8}
-                      className="glass-input w-28 text-center font-mono"
-                    />
-                  </td>
-                  <td className="py-3 px-4">
-                    <Input
-                      type="text"
-                      placeholder="00"
-                      value={totalLapses1600[candidate.slNo] || ""}
-                      onChange={(e) => {
-                        const formatted = formatTotalLapse(e.target.value);
-                        setTotalLapses1600({ ...totalLapses1600, [candidate.slNo]: formatted });
-                      }}
-                      maxLength={2}
-                      className="glass-input w-16 text-center font-mono"
-                    />
-                  </td>
-                  
-                  {/* Shot Put - Short Input fields */}
-                  <td className="py-3 px-4">
-                    <Input
-                      type="text"
-                      placeholder="0.0"
-                      value={attempt1[candidate.slNo] || ""}
-                      onChange={(e) => {
-                        const formatted = formatAttempt(e.target.value);
-                        setAttempt1({ ...attempt1, [candidate.slNo]: formatted });
-                      }}
-                      maxLength={4}
-                      className="glass-input w-16 text-center font-mono"
-                    />
-                  </td>
-                  <td className="py-3 px-4">
-                    <Input
-                      type="text"
-                      placeholder="0.0"
-                      value={attempt2[candidate.slNo] || ""}
-                      onChange={(e) => {
-                        const formatted = formatAttempt(e.target.value);
-                        setAttempt2({ ...attempt2, [candidate.slNo]: formatted });
-                      }}
-                      maxLength={4}
-                      className="glass-input w-16 text-center font-mono"
-                    />
-                  </td>
-                  <td className="py-3 px-4">
-                    <Input
-                      type="text"
-                      placeholder="0.0"
-                      value={attempt3[candidate.slNo] || ""}
-                      onChange={(e) => {
-                        const formatted = formatAttempt(e.target.value);
-                        setAttempt3({ ...attempt3, [candidate.slNo]: formatted });
-                      }}
-                      maxLength={4}
-                      className="glass-input w-16 text-center font-mono"
-                    />
-                  </td>
-                  
-                  {/* 100m Running - Only Running Time */}
-                  <td className="py-3 px-4">
-                    <Input
-                      type="text"
-                      placeholder="00:00:00"
-                      value={runningTimes100m[candidate.slNo] || ""}
-                      onChange={(e) => {
-                        const formatted = formatRunningTime(e.target.value);
-                        setRunningTimes100m({ ...runningTimes100m, [candidate.slNo]: formatted });
-                      }}
-                      maxLength={8}
-                      className="glass-input w-28 text-center font-mono"
-                    />
-                  </td>
-                </tr>
-              ))}
+              {isLoading ? (
+                // Skeleton Loader: 15 rows
+                Array.from({ length: 15 }).map((_, index) => <SkeletonRow key={index} index={index} />)
+              ) : (
+                // Actual Data Rows
+                candidatesData.map((candidate, index) => (
+                  <tr
+                    key={candidate.slNo}
+                    className={`border-b border-gray-200 ${
+                      index % 2 === 0 ? "bg-slate-50/50" : "bg-gray-50/50"
+                    } hover:bg-slate-100/50 transition-colors`}
+                  >
+                    <td className="py-3 px-4 text-sm">{candidate.slNo}</td>
+                    <td className="py-3 px-4 text-sm font-medium" style={{ textAlign: "left", paddingLeft: "8px" }}>
+                      {candidate.name}
+                    </td>
+                    <td className="py-3 px-4 text-sm font-semibold">{candidate.chestNo}</td>
+                    
+                    {/* 1600m Running */}
+                    <td className="py-3 px-4">
+                      <Input
+                        type="text"
+                        placeholder="00:00:00"
+                        value={runningTimes1600[candidate.slNo] || ""}
+                        onChange={(e) => {
+                          const formatted = formatRunningTime(e.target.value);
+                          setRunningTimes1600({ ...runningTimes1600, [candidate.slNo]: formatted });
+                        }}
+                        maxLength={8}
+                        className="glass-input w-28 text-center font-mono"
+                        disabled={isLoading}
+                      />
+                    </td>
+                    <td className="py-3 px-4">
+                      <Input
+                        type="text"
+                        placeholder="00"
+                        value={totalLapses1600[candidate.slNo] || ""}
+                        onChange={(e) => {
+                          const formatted = formatTotalLapse(e.target.value);
+                          setTotalLapses1600({ ...totalLapses1600, [candidate.slNo]: formatted });
+                        }}
+                        maxLength={2}
+                        className="glass-input w-16 text-center font-mono"
+                        disabled={isLoading}
+                      />
+                    </td>
+                    
+                    {/* Shot Put - Short Input fields */}
+                    <td className="py-3 px-4">
+                      <Input
+                        type="text"
+                        placeholder="0.0"
+                        value={attempt1[candidate.slNo] || ""}
+                        onChange={(e) => {
+                          const formatted = formatAttempt(e.target.value);
+                          setAttempt1({ ...attempt1, [candidate.slNo]: formatted });
+                        }}
+                        maxLength={4}
+                        className="glass-input w-16 text-center font-mono"
+                        disabled={isLoading}
+                      />
+                    </td>
+                    <td className="py-3 px-4">
+                      <Input
+                        type="text"
+                        placeholder="0.0"
+                        value={attempt2[candidate.slNo] || ""}
+                        onChange={(e) => {
+                          const formatted = formatAttempt(e.target.value);
+                          setAttempt2({ ...attempt2, [candidate.slNo]: formatted });
+                        }}
+                        maxLength={4}
+                        className="glass-input w-16 text-center font-mono"
+                        disabled={isLoading}
+                      />
+                    </td>
+                    <td className="py-3 px-4">
+                      <Input
+                        type="text"
+                        placeholder="0.0"
+                        value={attempt3[candidate.slNo] || ""}
+                        onChange={(e) => {
+                          const formatted = formatAttempt(e.target.value);
+                          setAttempt3({ ...attempt3, [candidate.slNo]: formatted });
+                        }}
+                        maxLength={4}
+                        className="glass-input w-16 text-center font-mono"
+                        disabled={isLoading}
+                      />
+                    </td>
+                    
+                    {/* 100m Running - Only Running Time */}
+                    <td className="py-3 px-4">
+                      <Input
+                        type="text"
+                        placeholder="00:00:00"
+                        value={runningTimes100m[candidate.slNo] || ""}
+                        onChange={(e) => {
+                          const formatted = formatRunningTime(e.target.value);
+                          setRunningTimes100m({ ...runningTimes100m, [candidate.slNo]: formatted });
+                        }}
+                        maxLength={8}
+                        className="glass-input w-28 text-center font-mono"
+                        disabled={isLoading}
+                      />
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
@@ -321,12 +421,14 @@ const DataEntry = () => {
           <Button
             onClick={handleSubmit}
             className="w-[10em] gradient-success text-white"
+            disabled={isLoading}
           >
             Submit
           </Button>
           <Button
             onClick={generateDummyData}
             className="w-[15em] gradient-success text-white "
+            disabled={isLoading}
           >
             Generate Dummy Data
           </Button>
@@ -335,6 +437,7 @@ const DataEntry = () => {
               variant="outline"
               onClick={handleViewPreview}
               className="w-[10em] border-primary text-primary"
+              disabled={isLoading}
             >
               View Preview
             </Button>
