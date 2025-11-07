@@ -91,7 +91,7 @@ const Reports = () => {
               <SelectContent className="bg-white/95 backdrop-blur-2xl border border-gray-200 shadow-xl">
                 <SelectItem value="qualified">Qualified</SelectItem>
                 <SelectItem value="disqualified">Disqualified</SelectItem>
-                <SelectItem value="annual">Annual Report</SelectItem>
+                <SelectItem value="annual">Summary Report</SelectItem>
               </SelectContent>
             </Select>
 
