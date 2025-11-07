@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Landing from "./pages/Landing";
 import DashboardLayout from "./pages/DashboardLayout";
 import DashboardHome from "./pages/DashboardHome";
+import Attendance from "./pages/Attendance";
 import PSTEntry from "./pages/PSTEntry";
 import BasicDetails from "./pages/BasicDetails";
 import BIBCounter from "./pages/BIBCounter";
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/" element={<Landing />} />
           <Route path="/dashboard" element={<DashboardLayout />}>
             <Route index element={<DashboardHome />} />
+            <Route path="attendance" element={<Attendance />} />
             <Route path="pst" element={<PSTEntry />} />
             <Route path="basic-details" element={<BasicDetails />} />
             <Route path="bib-counter" element={<BIBCounter />} />

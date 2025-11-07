@@ -32,6 +32,231 @@ export const printPDF = (htmlContent: string, filename: string) => {
   };
 };
 
+export const generateComprehensiveBatchPDFHTML = (
+  batchNumber: string,
+  candidates: Array<{
+    slNo: number;
+    name: string;
+    rollNo: string;
+    gender: string;
+    chestNo: string;
+    bibNo: string;
+  }>
+) => {
+  const { date, time } = getCurrentDateTime();
+  const barcode = generateBarcode(batchNumber);
+
+  const candidateRows = candidates.map(candidate => `
+    <tr>
+      <td>${candidate.slNo}</td>
+      <td class="photo-cell"></td>
+      <td>${candidate.rollNo}</td>
+      <td style="text-align: left; padding-left: 8px;">${candidate.name}</td>
+      <td>${candidate.gender}</td>
+      <td>${candidate.chestNo}</td>
+      <td>${candidate.bibNo}</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+  `).join('');
+
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Comprehensive Batch PDF - All Events</title>
+  <style>
+    @media print {
+      @page { 
+        margin: 1cm;
+        size: A4 landscape;
+      }
+      body { margin: 0; }
+    }
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      margin: 0 auto;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+      margin-top: 50px;
+      position: relative;
+    }
+    .header h1 {
+      margin: 5px 0;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .header h2 {
+      margin: 5px 0;
+      font-size: 14px;
+    }
+    .header h3 {
+      margin: 5px 0;
+      font-size: 12px;
+    }
+    .barcode {
+      position: absolute;
+      right: 0;
+      top: -45px;
+      font-family: 'Courier New', monospace;
+      font-size: 9px;
+      letter-spacing: -1px;
+      line-height: 1;
+      white-space: nowrap;
+    }
+    .batch-info {
+      margin: 15px 0;
+      font-size: 12px;
+    }
+    .batch-info p {
+      margin: 5px 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 10px;
+    }
+    th, td {
+      border: 1px solid #000;
+      padding: 6px 4px;
+      text-align: center;
+    }
+    .event-header {
+      background-color: #d3d3d3;
+      font-weight: bold;
+      font-size: 11px;
+      text-align: center;
+    }
+    .column-header {
+      background-color: #e8e8e8;
+      font-weight: bold;
+      font-size: 10px;
+      text-align: center;
+      vertical-align: middle;
+    }
+    .photo-cell {
+      width: 60px;
+      height: 60px;
+      background: #f5f5f5;
+    }
+    .signatures {
+      margin-top: 60px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .signature-block {
+      width: 45%;
+    }
+    .signature-block p {
+      margin: 5px 0;
+      font-size: 11px;
+      font-weight: bold;
+    }
+    .signature-line {
+      border-top: 1px solid #000;
+      margin-top: 40px;
+      padding-top: 5px;
+    }
+    .footer-section {
+      margin-top: 30px;
+      font-size: 11px;
+    }
+    .footer-section p {
+      margin: 5px 0;
+      font-weight: bold;
+    }
+    @media print {
+      .header {
+        margin-top: 50px;
+      }
+      .barcode {
+        top: -45px;
+        font-size: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="barcode">${barcode}</div>
+    <h1>OFFICE OF THE COMMISSIONER OF POLICE</h1>
+    <h2>PUNE CITY</h2>
+    <h3>PRISON CONSTABLE(WEST REGION) RECRUITMENT 22-23</h3>
+    <h3>Physical Endurance & Measurement Test (PE&MT) of various posts on requirement basis in Prison Constable Recruitment</h3>
+    <h2>DETAILS LIST</h2>
+  </div>
+
+  <div class="batch-info">
+    <p><strong>Batch No. :</strong> ${batchNumber}</p>
+    <p><strong>Total Candidates :</strong> ${candidates.length}</p>
+  </div>
+
+  <div style="display: flex; justify-content: space-between; margin: 10px 0; font-size: 11px;">
+    <p>Generated Date : ${date} ${time}</p>
+    <p>Downloaded Date : ${date} ${time}</p>
+  </div>
+
+  <table>
+    <thead>
+      <tr class="event-header">
+        <th rowspan="2">Sl. No.</th>
+        <th rowspan="2">Photo</th>
+        <th rowspan="2">Roll No.</th>
+        <th rowspan="2">Name</th>
+        <th rowspan="2">Gender</th>
+        <th rowspan="2">Chest No</th>
+        <th rowspan="2">Bib Number</th>
+        <th colspan="2">1600m Running</th>
+        <th colspan="3">Shot Put</th>
+        <th colspan="2">100m Running</th>
+      </tr>
+      <tr class="column-header">
+        <th>Running Time</th>
+        <th>Total Lapse</th>
+        <th>1st Attempt</th>
+        <th>2nd Attempt</th>
+        <th>3rd Attempt</th>
+        <th>Running Time</th>
+        <th>Total Lapse</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${candidateRows}
+    </tbody>
+  </table>
+
+  <div class="signatures">
+    <div class="signature-block">
+      <p>Details Incharge Name</p>
+      <p>Designation</p>
+      <div class="signature-line">Signature</div>
+    </div>
+    <div class="signature-block">
+      <p>Event Incharge Name</p>
+      <p>Designation</p>
+      <div class="signature-line">Signature</div>
+    </div>
+  </div>
+
+  <div class="footer-section">
+    <p>Counter Number: __________</p>
+    <p>Detail Number: __________</p>
+  </div>
+</body>
+</html>
+  `;
+};
+
 export const generateBatchPDFHTML = (
   batchType: 'running' | 'shotput',
   eventName: string,
@@ -229,13 +454,163 @@ export const generateBatchPDFHTML = (
   `;
 };
 
+export const generatePSTReportPDFHTML = (reportData: {
+  height: string;
+  chestNormal: string;
+  chestExpanded: string;
+  chestDiff: string;
+  passed: boolean;
+  candidateName: string;
+  rollNo: string;
+}) => {
+  const { date, time } = getCurrentDateTime();
+  
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <title>PST Report</title>
+      <style>
+        @media print {
+          @page { margin: 1cm; }
+          body { margin: 0; }
+        }
+        body {
+          font-family: Arial, sans-serif;
+          padding: 20px;
+          max-width: 800px;
+          margin: 0 auto;
+        }
+        .header {
+          text-align: center;
+          margin-bottom: 30px;
+        }
+        .header h1 {
+          margin: 5px 0;
+          font-size: 18px;
+          font-weight: bold;
+        }
+        .header h2 {
+          margin: 5px 0;
+          font-size: 16px;
+        }
+        .status {
+          text-align: center;
+          margin: 30px 0;
+          padding: 20px;
+          border-radius: 10px;
+          ${reportData.passed ? 'background-color: #d4edda; border: 2px solid #28a745;' : 'background-color: #f8d7da; border: 2px solid #dc3545;'}
+        }
+        .status h2 {
+          margin: 0;
+          font-size: 24px;
+          ${reportData.passed ? 'color: #155724;' : 'color: #721c24;'}
+        }
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin: 20px 0;
+        }
+        th, td {
+          border: 1px solid #000;
+          padding: 12px;
+          text-align: left;
+        }
+        th {
+          background-color: #f0f0f0;
+          font-weight: bold;
+        }
+        .pass {
+          color: #28a745;
+          font-weight: bold;
+        }
+        .fail {
+          color: #dc3545;
+          font-weight: bold;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <h1>OFFICE OF THE COMMISSIONER OF POLICE</h1>
+        <h2>PUNE CITY</h2>
+        <h2>PRISON CONSTABLE(WEST REGION) RECRUITMENT 22-23</h2>
+        <h2>Physical Standard Test (PST) Report</h2>
+        <p>Generated: ${date} ${time}</p>
+      </div>
+
+      <table>
+        <tr>
+          <th>Candidate Name</th>
+          <td>${reportData.candidateName}</td>
+        </tr>
+        <tr>
+          <th>Roll Number</th>
+          <td>${reportData.rollNo}</td>
+        </tr>
+      </table>
+
+      <div class="status">
+        <h2>Result: ${reportData.passed ? 'PASSED' : 'FAILED'}</h2>
+      </div>
+
+      <h3>Test Results</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Parameter</th>
+            <th>Requirement</th>
+            <th>Actual Value</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Height</td>
+            <td>≥ 162.5 cm</td>
+            <td>${reportData.height} cm</td>
+            <td class="${parseFloat(reportData.height) >= 162.5 ? 'pass' : 'fail'}">${parseFloat(reportData.height) >= 162.5 ? '✓ PASS' : '✗ FAIL'}</td>
+          </tr>
+          <tr>
+            <td>Chest (Normal)</td>
+            <td>≥ 79 cm</td>
+            <td>${reportData.chestNormal} cm</td>
+            <td class="${parseFloat(reportData.chestNormal) >= 79 ? 'pass' : 'fail'}">${parseFloat(reportData.chestNormal) >= 79 ? '✓ PASS' : '✗ FAIL'}</td>
+          </tr>
+          <tr>
+            <td>Chest (Expanded)</td>
+            <td>-</td>
+            <td>${reportData.chestExpanded} cm</td>
+            <td>-</td>
+          </tr>
+          <tr>
+            <td>Chest Difference</td>
+            <td>≥ 5 cm</td>
+            <td>${reportData.chestDiff} cm</td>
+            <td class="${parseFloat(reportData.chestDiff) >= 5 ? 'pass' : 'fail'}">${parseFloat(reportData.chestDiff) >= 5 ? '✓ PASS' : '✗ FAIL'}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="margin-top: 60px;">
+        <p><strong>Verified By: ___________________</strong></p>
+        <p><strong>Date: ___________________</strong></p>
+      </div>
+    </body>
+    </html>
+  `;
+};
+
 export const generateDocumentVerificationPDFHTML = (candidateData: {
   applicationId: string;
   name: string;
   fatherName: string;
+  motherName: string;
   caste: string;
   dob: string;
   mobile: string;
+  gender: string;
 }) => {
   const { date, time } = getCurrentDateTime();
 
@@ -321,6 +696,16 @@ export const generateDocumentVerificationPDFHTML = (candidateData: {
           </tr>
           <tr>
             <td><strong>4</strong></td>
+            <td><strong>MOTHERS NAME</strong></td>
+            <td>${candidateData.motherName}</td>
+          </tr>
+          <tr>
+            <td><strong>5</strong></td>
+            <td><strong>GENDER</strong></td>
+            <td>${candidateData.gender}</td>
+          </tr>
+          <tr>
+            <td><strong>6</strong></td>
             <td><strong>CASTE/APPLICATION CATEGORY</strong></td>
             <td>${candidateData.caste}</td>
           </tr>

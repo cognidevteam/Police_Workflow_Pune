@@ -1,11 +1,18 @@
 import { useNavigate } from "react-router-dom";
-import { Ruler, FileText, Tag, BarChart } from "lucide-react";
+import { Ruler, FileText, Tag, BarChart, UserCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const DashboardHome = () => {
   const navigate = useNavigate();
 
   const workflows = [
+    {
+      title: "Attendance",
+      description: "Biometric attendance and candidate verification",
+      icon: UserCheck,
+      path: "/dashboard/attendance",
+      gradient: "from-indigo-500 to-purple-500",
+    },
     {
       title: "PST Entry",
       description: "Enter Physical Standard Test measurements",
@@ -14,7 +21,7 @@ const DashboardHome = () => {
       gradient: "from-blue-500 to-cyan-500",
     },
     {
-      title: "Basic Details",
+      title: "Document Details",
       description: "Document verification and candidate details",
       icon: FileText,
       path: "/dashboard/basic-details",

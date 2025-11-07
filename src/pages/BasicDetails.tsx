@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Download } from "lucide-react";
+import { Download, Search } from "lucide-react";
 import CandidateDetailsCard from "@/components/CandidateDetailsCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,46 +16,106 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { generateDocumentVerificationPDFHTML, printPDF } from "@/utils/pdfGenerator";
 
+const dummyCandidates = [
+  { name: "SHUBHAM SUNIL MANKAR", rollNo: "110378000000001", fatherName: "SUNIL MANKAR", motherName: "SUNITA MANKAR", phone: "9763677201", caste: "EWS", gender: "Male", dob: "24-02-2000" },
+  { name: "RAJESH KUMAR SHARMA", rollNo: "110378000000002", fatherName: "KUMAR SHARMA", motherName: "RADHA SHARMA", phone: "9876543210", caste: "OPEN", gender: "Male", dob: "15-06-1998" },
+  { name: "PRIYA PATEL", rollNo: "110378000000003", fatherName: "RAMESH PATEL", motherName: "SITA PATEL", phone: "9123456789", caste: "OBC", gender: "Female", dob: "10-09-1999" },
+];
+
 const certificates = [
-  "Caste Certificate",
-  "Non Creamy Layer",
-  "Earthquake Certificate",
-  "Are you eligible for Naxalite Exemption?",
-  "Project Affected Certificate",
-  "Homeguard Certificate",
-  "Ex-Serviceman Dependent",
-  "Ex-Serviceman Discharge Certificate",
-  "Sportsman",
-  "Child of Police",
-  "Part-Time Employee",
-  "Orphan",
-  "NCC",
-  "Domicile",
+  { name: "Caste Certificate", date: "2023-05-12", hasIt: "yes" },
+  { name: "Non Creamy Layer", date: "2023-06-08", hasIt: "no" },
+  { name: "Earthquake Certificate", date: "2023-03-22", hasIt: "yes" },
+  { name: "Are you eligible for Naxalite Exemption?", date: "2023-04-15", hasIt: "no" },
+  { name: "Project Affected Certificate", date: "2023-07-01", hasIt: "yes" },
+  { name: "Homeguard Certificate", date: "2023-02-18", hasIt: "yes" },
+  { name: "Ex-Serviceman Dependent", date: "2023-01-30", hasIt: "no" },
+  { name: "Ex-Serviceman Discharge Certificate", date: "2023-08-10", hasIt: "yes" },
+  { name: "Sportsman", date: "2023-09-05", hasIt: "no" },
+  { name: "Child of Police", date: "2023-05-25", hasIt: "yes" },
+  { name: "Part-Time Employee", date: "2023-04-12", hasIt: "no" },
+  { name: "Orphan", date: "2023-06-20", hasIt: "yes" },
+  { name: "NCC", date: "2023-03-08", hasIt: "yes" },
+  { name: "Domicile", date: "2023-07-17", hasIt: "no" },
 ];
 
 const BasicDetails = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCandidate, setSelectedCandidate] = useState(dummyCandidates[0]);
   const [candidateStatus, setCandidateStatus] = useState("accept");
 
+  const handleSearch = () => {
+    if (!searchTerm) {
+      toast.error("Please enter a Roll Number or Name");
+      return;
+    }
+    
+    const found = dummyCandidates.find(
+      c => c.rollNo.includes(searchTerm) || c.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    
+    if (found) {
+      setSelectedCandidate(found);
+      toast.success(`Candidate found: ${found.name}`);
+    } else {
+      toast.error("Candidate not found");
+    }
+  };
+
   const handleSubmit = () => {
-    // Generate and auto-download PDF
+    // Generate and auto-download PDF using selected candidate
     const candidateData = {
-      applicationId: "110378000000001",
-      name: "SHUBHAM SUNIL MANKAR",
-      fatherName: "SUNIL MANKAR",
-      caste: "EWS",
-      dob: "24-02-2000",
-      mobile: "9763677201"
+      applicationId: selectedCandidate.rollNo,
+      name: selectedCandidate.name,
+      fatherName: selectedCandidate.fatherName,
+      motherName: selectedCandidate.motherName,
+      caste: selectedCandidate.caste,
+      dob: selectedCandidate.dob,
+      mobile: selectedCandidate.phone,
+      gender: selectedCandidate.gender
     };
 
     const pdfHTML = generateDocumentVerificationPDFHTML(candidateData);
-    printPDF(pdfHTML, "Document_Verification_Form.pdf");
+    printPDF(pdfHTML, `Document_Verification_${selectedCandidate.rollNo}.pdf`);
     
     toast.success("Document verification submitted! PDF is being generated...");
   };
 
   return (
     <div className="space-y-6">
-      <CandidateDetailsCard />
+      <div className="glass-card p-4">
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+            <Input
+              placeholder="Enter Roll Number or Name"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+              className="glass-input pl-10"
+            />
+          </div>
+          <Button
+            onClick={handleSearch}
+            className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white"
+          >
+            <Search className="w-4 h-4 mr-2" />
+            Search
+          </Button>
+        </div>
+      </div>
+
+      <CandidateDetailsCard 
+        name={selectedCandidate.name}
+        rollNumber={selectedCandidate.rollNo}
+        applicationNumber={selectedCandidate.rollNo}
+        fatherName={selectedCandidate.fatherName}
+        motherName={selectedCandidate.motherName}
+        phone={selectedCandidate.phone}
+        caste={selectedCandidate.caste}
+        gender={selectedCandidate.gender}
+        dob={selectedCandidate.dob}
+      />
 
       <div className="glass-card p-6">
         <div className="bg-gradient-to-r from-primary via-secondary to-accent text-white px-6 py-3 rounded-xl mb-6">
@@ -74,24 +134,28 @@ const BasicDetails = () => {
             <tbody>
               {certificates.map((cert, index) => (
                 <tr
-                  key={cert}
+                  key={cert.name}
                   className={`border-b border-white/20 ${
                     index % 2 === 0 ? "bg-white/30" : "bg-sky-50/30"
                   } hover:bg-white/50 transition-colors`}
                 >
-                  <td className="py-3 px-4 text-sm">{cert}</td>
+                  <td className="py-3 px-4 text-sm">{cert.name}</td>
                   <td className="py-3 px-4">
-                    <Input type="date" className="glass-input max-w-xs mx-auto" />
+                    <Input 
+                      type="date" 
+                      defaultValue={cert.date}
+                      className="glass-input max-w-xs mx-auto" 
+                    />
                   </td>
                   <td className="py-3 px-4">
-                    <RadioGroup defaultValue="yes" className="flex justify-center gap-4">
+                    <RadioGroup defaultValue={cert.hasIt} className="flex justify-center gap-4">
                       <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="yes" id={`${cert}-yes`} />
-                        <Label htmlFor={`${cert}-yes`}>Yes</Label>
+                        <RadioGroupItem value="yes" id={`${cert.name}-yes`} />
+                        <Label htmlFor={`${cert.name}-yes`}>Yes</Label>
                       </div>
                       <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="no" id={`${cert}-no`} />
-                        <Label htmlFor={`${cert}-no`}>No</Label>
+                        <RadioGroupItem value="no" id={`${cert.name}-no`} />
+                        <Label htmlFor={`${cert.name}-no`}>No</Label>
                       </div>
                     </RadioGroup>
                   </td>
@@ -108,7 +172,7 @@ const BasicDetails = () => {
               <Input
                 id="mobile"
                 type="text"
-                value="9763677201"
+                value={selectedCandidate.phone}
                 readOnly
                 className="glass-input bg-muted"
               />

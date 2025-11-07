@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { Menu, X, Ruler, FileText, Tag, BarChart, ClipboardList, LogOut } from "lucide-react";
+import { Menu, X, Ruler, FileText, Tag, BarChart, ClipboardList, LogOut, UserCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -14,8 +14,9 @@ import {
 } from "@/components/ui/alert-dialog";
 
 const menuItems = [
+  { title: "Attendance", url: "/dashboard/attendance", icon: UserCheck },
   { title: "PST Entry", url: "/dashboard/pst", icon: Ruler },
-  { title: "Basic Details", url: "/dashboard/basic-details", icon: FileText },
+  { title: "Document Details", url: "/dashboard/basic-details", icon: FileText },
   { title: "BIB Counter", url: "/dashboard/bib-counter", icon: Tag },
   { title: "Data Entry", url: "/dashboard/data-entry", icon: BarChart },
   { title: "Reports", url: "/dashboard/reports", icon: ClipboardList },
