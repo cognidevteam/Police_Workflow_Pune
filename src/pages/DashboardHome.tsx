@@ -47,7 +47,7 @@ const DashboardHome = () => {
     <div className="space-y-8">
       <div className="glass-card p-8 text-center">
         <h1 className="text-3xl font-bold text-foreground mb-2">
-          Welcome to PE&MT Dashboard
+          Welcome to PST PET WORKFLOW
         </h1>
         <p className="text-muted-foreground">
           Select a workflow to begin processing candidate data

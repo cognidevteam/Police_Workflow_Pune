@@ -9,17 +9,13 @@ const DashboardHeader = () => {
     <header className="fixed top-0 left-0 right-0 z-50 glass-card mx-4 mt-4 rounded-2xl">
       <div className="flex items-center justify-between px-6 py-4">
         <div className="flex items-center space-x-4">
-          <h1 className="text-sm font-semibold text-foreground hidden md:block">
-            OFFICE OF THE COMMISSIONER OF POLICE
-          </h1>
           <h1 className="text-sm font-semibold text-foreground md:hidden">
             POLICE DASHBOARD
           </h1>
         </div>
-        
         <div className="flex-1 text-center hidden lg:block">
-          <p className="text-sm font-medium text-primary">
-            PRISON CONSTABLE RECRUITMENT 22-23 - PE&MT Dashboard
+          <p className=" font-bold text-2xl text-primary">
+            GROUND LEVEL PST PET Software Workflow
           </p>
         </div>
 
